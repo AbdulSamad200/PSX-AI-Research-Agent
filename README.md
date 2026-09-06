@@ -1,20 +1,20 @@
-# 📈 PSXenius: Institutional AI Stock Research Agent for PSX
+# 📈 PSX-AI-Research-Agent: Institutional AI Stock Research for PSX
 
-**PSXenius** is an institutional-grade, evidence-grounded AI investment research agent designed specifically for the **Pakistan Stock Exchange (PSX)**. 
+**PSX-AI-Research-Agent (PSXenius)** is an institutional-grade, evidence-grounded AI investment research agent designed specifically for the **Pakistan Stock Exchange (PSX)**. 
 
-Built with **LangGraph**, **OpenAI (`gpt-4o-mini`)**, **`pypsx-toolkit`**, and **`psx-mcp-server`**, PSXenius autonomously plans research tasks, fetches exchange data dynamically, deterministically computes key technical and fundamental indicators in-memory without duplicate fetches, and produces audit-traceable investment reasoning.
+Built with **LangGraph**, **OpenAI (`gpt-4o-mini`)**, **`pypsx-toolkit`**, and **`psx-mcp-server`**, the agent autonomously plans research tasks, fetches exchange data dynamically, deterministically computes key technical and fundamental indicators in-memory without duplicate fetches, and produces audit-traceable investment reasoning.
 
 ---
 
 ## 🌟 Key Features
 
-- **Autonomous Research Planning**: Uses OpenAI function calling to selectively call only the required tools (e.g. quote, OHLCV history, statements, or cash dividend history) based on the user's research query.
+- **Autonomous Research Planning**: Uses OpenAI function calling to selectively execute only the required tools (quotes, multi-year OHLCV history, financial statements, or cash dividend history) based on the user's research query.
 - **Deterministic Python Analytics Engine**:
   - **Technical Indicators**: 50-day & 200-day Simple Moving Averages (SMA), 14-day RSI (Wilder's smoothing), MACD (12, 26, 9), distance from 52-week high & low.
   - **Performance & Risk**: Calendar date-based 1-Year & 3-Year returns (recording exact observation dates without silent fallbacks), 5-Year Price CAGR, Annualized Volatility, and Maximum Drawdown.
   - **Dividend Analytics**: Trailing Twelve Months (TTM) cash dividend yield, 3-Year Dividend CAGR, and annual dividend history (2021–2026 YTD).
   - **Statement Validation**: Cross-checks income statement net profit margins against reported ratios.
-- **Zero Redundant Data Downloads**: The deterministic analysis engine consumes raw data already collected by previous tool calls inside `AgentState`, completely eliminating redundant network calls.
+- **Zero Redundant Data Downloads**: The deterministic analysis engine consumes raw data already collected by tool calls inside `AgentState`, completely eliminating redundant network calls.
 - **1-to-1 Evidence Traceability**: Every metric cited in the reasoning output is tied to an explicit, verified `EvidenceItem` (`EVD-FUND-*`, `EVD-TECH-*`, `EVD-DIV-*`) stating its calculation origin, date, and value.
 - **Strict Semantic Guardrails**:
   - Distinguishes historical annual figures from partial `2026 (YTD)` figures and suppresses invalid YoY comparisons on partial years.
@@ -41,24 +41,18 @@ graph TD
 ## 📁 Repository Structure
 
 ```
-PSX Stock Agent/
-├── docs/                             # Comprehensive Architecture & Audit Documentation
-│   ├── context.md                    # Project context & background
-│   ├── data_source_mapping.md        # Toolkit vs MCP server tool allocation
-│   ├── implementation_plan.md        # Full architectural plan
-│   ├── metrics_guide.md              # Financial & technical metrics guide
-│   ├── mebl_audit_report.md          # Step 7 empirical execution audit
-│   └── psx_mcp_server_analysis.md    # MCP server tools analysis
-│
+PSX-AI-Research-Agent/
 ├── src/                              # Core Application Code
 │   ├── agent/                        # LangGraph State, Nodes, and Workflow
+│   │   ├── __init__.py
 │   │   ├── graph.py                  # Full research StateGraph definition
-│   │   ├── nodes.py                  # Planner, tool execution, analysis engine, & reasoning nodes
 │   │   ├── models.py                 # Pydantic StructuredReasoningOutput model
+│   │   ├── nodes.py                  # Planner, tool execution, analysis engine, & reasoning nodes
 │   │   ├── state.py                  # AgentState & EvidenceItem TypedDict definitions
 │   │   └── tools_registry.py         # Unified registry of MCP and toolkit tools
 │   │
 │   ├── analysis/                     # Deterministic Calculation & Validation Modules
+│   │   ├── __init__.py
 │   │   ├── technical.py              # SMA 50/200, RSI 14, MACD, 52W high/low
 │   │   ├── performance.py            # Date-based 1Y/3Y returns, 5Y CAGR, Max Drawdown, Volatility
 │   │   ├── dividends.py              # TTM yield, 3Y dividend CAGR, historical yields (2021-2026 YTD)
@@ -66,23 +60,14 @@ PSX Stock Agent/
 │   │   ├── engine.py                 # Source metrics extraction orchestrator
 │   │   └── models.py                 # DerivedMetric container dataclasses
 │   │
-│   └── tools/                        # Low-Level Tool Wrappers
-│       ├── mcp_tools.py              # psx-mcp-server integration
+│   └── tools/                        # Data Layer Integration
+│       ├── __init__.py
+│       ├── mcp_client.py             # MultiServerMCPClient connection manager
+│       ├── mcp_tools.py              # psx-mcp-server tool wrappers
 │       └── toolkit_tools.py          # pypsx-toolkit wrappers
 │
-├── tests/                            # Comprehensive Test Suite (100% Passing)
-│   ├── test_step7_integrity_fixes.py # Date-based return & dividend regression tests
-│   ├── test_audit_fixes.py           # Explicit EvidenceItem & grounding regression tests
-│   ├── test_full_workflow.py         # End-to-end LangGraph query workflow tests
-│   ├── test_tool_calling.py          # Dynamic tool selection & planner loop tests
-│   ├── test_analysis_engine.py       # Deterministic metrics & validation tests
-│   ├── test_reasoning_node.py        # OpenAI reasoning node tests
-│   ├── test_mcp_tools.py             # MCP server integration tests
-│   └── test_toolkit_tools.py         # pypsx-toolkit integration tests
-│
 ├── .env.example                      # Template for required environment variables
-├── .gitignore                        # Git ignore rules (secrets, venvs, caches)
-├── conftest.py                       # Pytest configuration
+├── .gitignore                        # Git ignore rules (protects .env and caches)
 ├── main.py                           # CLI Application Entry Point
 ├── pyproject.toml                    # Dependencies and package metadata
 ├── uv.lock                           # Reproducible lockfile
@@ -104,14 +89,14 @@ PSX Stock Agent/
 Clone the repository and install all dependencies:
 
 ```bash
-git clone https://github.com/<your-username>/psx-stock-agent.git
-cd psx-stock-agent
+git clone https://github.com/AbdulSamad200/PSX-AI-Research-Agent.git
+cd PSX-AI-Research-Agent
 uv sync
 ```
 
 ### 3. Environment Configuration
 
-Copy the example environment file and add your OpenAI API key:
+Create your `.env` file from the provided template:
 
 ```bash
 cp .env.example .env
@@ -176,39 +161,6 @@ uv run python main.py MEBL --query "Analyze MEBL for a long-term dividend-growth
 💰 Dividend Interpretation:
    The TTM dividend yield is 6.45% (EVD-DIV-MEBL-TTMYIELD). The 3-year Dividend CAGR is 14.47% (EVD-DIV-MEBL-CAGR3Y)...
 ```
-
----
-
-## 🧪 Running Tests
-
-Execute the complete test suite:
-
-```bash
-uv run pytest -v
-```
-
-Or run focused test modules:
-
-```bash
-# Run Step 7 data-integrity & date-based performance tests
-uv run pytest tests/test_step7_integrity_fixes.py -v
-
-# Run full end-to-end workflow tests
-uv run pytest tests/test_full_workflow.py -v
-
-# Run analysis engine & validation tests
-uv run pytest tests/test_analysis_engine.py -v
-```
-
----
-
-## 📖 Key Documentation
-
-For comprehensive details on methodology, design, and audits:
-- **[Metrics Guide](docs/metrics_guide.md)**: Formulas, definitions, and limitations of all computed financial and technical indicators.
-- **[Data Source Mapping](docs/data_source_mapping.md)**: Complete breakdown of `psx-mcp-server` vs. `pypsx-toolkit` responsibilities.
-- **[Execution Audit Report](docs/mebl_audit_report.md)**: Deep forensic audit of model claims against ground-truth data sources.
-- **[Implementation Plan](docs/implementation_plan.md)**: Architectural roadmap from foundational state to full research workflow.
 
 ---
 
