@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment & API keys (NEVER COMMIT SENSITIVE KEYS)
+.env
+.env.*
+!.env.example
+
+# Testing & caches
+.pytest_cache/
+.deepeval/
+tests/*.json
+scratch/
+
+
